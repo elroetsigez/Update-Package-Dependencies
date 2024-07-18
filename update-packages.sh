@@ -16,6 +16,7 @@ fi
 # Setup Names
 branch_name="Update-package-dependencies"
 commit_message="Package.json up-to-date"
+commit_description="This PR updates the package.json file"
 
 # All remaining parameters are added to the list of directories to edit
 directories=$@ 
@@ -34,7 +35,7 @@ for directory in "$@"; do
 
     # Rebase from master and create a new branch
     git pull origin master
-    git checkout -b $branch_name
+    git checkout -b "$branch_name"
 
     # Navigate to the test/client directory- Update package.json -Nav back to directory
     cd "$dir/client"
@@ -44,12 +45,15 @@ for directory in "$@"; do
     # Stage the changes- Commit -Push changes to current branch
     git add -A
     git commit -m "$commit_message"
-    git push -u origin $branch_name
+    git push -u origin "$branch_name"
 
     # Display message of changes made
-    echo "Pushed changes to - "
-    echo "$repo"/"$BRANCH_NAME"
-    
+    echo "Pushed changes to - $branch_name"
+
+    # Create a pull request
+    gh pr create --base master --head $branch_name --title "$commit_message" --body "$commit_description"
+
+
   done
 
   # Change back to the original directory
